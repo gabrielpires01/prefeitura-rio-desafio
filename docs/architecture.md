@@ -10,15 +10,14 @@
 │  │   Handler    │──▶│   Service    │──▶│   Repository     │   │
 │  │              │   │              │   │                  │   │
 │  │ auth_handler │   │ auth_service │   │ child_repository │   │
-│  │child_handler │   │child_service │   │  (queries SQL)   │   │
+│  │child_handler │   │child_service │   │  (GORM queries)  │   │
 │  │summary_handl │   │              │   │                  │   │
 │  └──────┬───────┘   └──────────────┘   └────────┬─────────┘   │
 │         │                                        │             │
 │  ┌──────▼───────┐                      ┌────────▼─────────┐   │
 │  │  Middleware  │                      │    PostgreSQL     │   │
-│  │  Auth (JWT)  │                      │    tabela        │   │
-│  └──────────────┘                      │    children      │   │
-│                                        └──────────────────┘   │
+│  │  Auth (JWT)  │                      │  (5 tabelas)     │   │
+│  └──────────────┘                      └──────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -103,21 +102,43 @@ Técnico abre o navegador
 ## Modelo de Dados
 
 ```
-Child {
-  id, nome, data_nascimento, bairro, responsavel
-  saude?              { ultima_consulta, vacinas_em_dia, alertas[] }
-  educacao?           { escola, frequencia_percent, alertas[] }
-  assistencia_social? { cad_unico, beneficio_ativo, alertas[] }
-  revisado, revisado_por, revisado_em
-}
+children                          saude
+──────────────────────            ──────────────────────────────
+id           VARCHAR(10) PK       id              UUID PK
+nome         VARCHAR               crianca_id      VARCHAR(10) FK → children.id
+data_nasc.   DATE                  ultima_consulta DATE
+bairro       VARCHAR               vacinas_em_dia  BOOLEAN
+responsavel  VARCHAR               alertas         TEXT[]
+revisado     BOOLEAN
+revisado_por VARCHAR               assistencia_social
+revisado_em  TIMESTAMPTZ           ──────────────────────────────
+                                   id              UUID PK
+educacao                           crianca_id      VARCHAR(10) FK → children.id
+──────────────────────────         cad_unico       BOOLEAN
+id         UUID PK                 beneficio_ativo BOOLEAN
+crianca_id VARCHAR(10) FK → ch.    alertas         TEXT[]
+escola     VARCHAR
+alertas    TEXT[]                 
 
-// Casos especiais tratados:
-// - saude = null          → placeholder "Sem dados" exibido
-// - educacao = null       → placeholder "Sem dados" exibido
-// - assistencia = null    → placeholder "Sem dados" exibido
-// - todos três = null     → contado como sem_dados no resumo
-// - escola = null         → exibido como "Não informada"
-// - frequencia = null     → exibido como "—"
+
+// Regras:
+// - cada criança pode ter 0 ou 1 registro em cada tabela auxiliar
+// - ON DELETE CASCADE em todas as FKs filhas
+```
+
+## Camada ORM (GORM)
+
+```
+domain.Child          → tabela children
+domain.Saude          → tabela saude           (HasOne via CriancaID)
+domain.Educacao       → tabela educacao        (HasOne via CriancaID)
+domain.AssistenciaSocial → tabela assistencia_social (HasOne via CriancaID)
+
+Preload na consulta:
+  db.Preload("Saude").
+     Preload("AssistenciaSocial").
+     Preload("Educacao").
+     First(&child, "id = ?", id)
 ```
 
 ## Serviços do Docker Compose
