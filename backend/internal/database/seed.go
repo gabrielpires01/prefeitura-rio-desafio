@@ -102,10 +102,10 @@ func SeedIfEmpty(db *gorm.DB, seedFile string) error {
 			if sr.Educacao != nil {
 				educacaoID := newUUID()
 				educ := domain.Educacao{
-					ID:        educacaoID,
-					CriancaID: sr.ID,
-					Escola:    sr.Educacao.Escola,
-					Alertas:   pq.StringArray(sr.Educacao.Alertas),
+					ID:                educacaoID,
+					CriancaID:         sr.ID,
+					Escola:            sr.Educacao.Escola,
+					Alertas:           pq.StringArray(sr.Educacao.Alertas),
 					FrequenciaPercent: sr.Educacao.FrequenciaPercent,
 				}
 				if err := tx.Create(&educ).Error; err != nil {

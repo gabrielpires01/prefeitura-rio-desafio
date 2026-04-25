@@ -37,7 +37,7 @@ type Educacao struct {
 	CriancaID         string         `gorm:"column:crianca_id"               json:"-"`
 	Escola            *string        `gorm:"column:escola"                   json:"escola"`
 	Alertas           pq.StringArray `gorm:"type:text[];column:alertas"      json:"alertas"`
-	FrequenciaPercent *float64       `gorm:"-"                               json:"frequencia_percent"`
+	FrequenciaPercent *float64       `gorm:"column:frequencia_percent"       json:"frequencia_percent"`
 }
 
 func (Educacao) TableName() string { return "educacao" }

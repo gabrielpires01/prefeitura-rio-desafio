@@ -24,6 +24,6 @@ services:
       - key: GIN_MODE
         value: release
       - key: SEED_FILE
-        value: data/seed.json
+        value: internal/database/data/seed.json
       - key: ALLOWED_ORIGINS
         sync: false  # Set manually in Render dashboard after Vercel deploy

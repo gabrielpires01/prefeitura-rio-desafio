@@ -19,19 +19,12 @@ CREATE TABLE IF NOT EXISTS saude (
 );
 
 CREATE TABLE IF NOT EXISTS educacao (
-    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    crianca_id VARCHAR(10) NOT NULL REFERENCES children(id) ON DELETE CASCADE,
-    escola     VARCHAR(255),
-    alertas    TEXT[] NOT NULL DEFAULT '{}',
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    crianca_id         VARCHAR(10) NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    escola             VARCHAR(255),
+    frequencia_percent NUMERIC(5,2),
+    alertas            TEXT[] NOT NULL DEFAULT '{}',
     CONSTRAINT uq_educacao_crianca UNIQUE (crianca_id)
-);
-
-CREATE TABLE IF NOT EXISTS frequencia_log (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    educacao_id UUID NOT NULL REFERENCES educacao(id) ON DELETE CASCADE,
-    data        DATE NOT NULL,
-    presente    BOOLEAN NOT NULL,
-    CONSTRAINT uq_frequencia_dia UNIQUE (educacao_id, data)
 );
 
 CREATE TABLE IF NOT EXISTS assistencia_social (
@@ -43,6 +36,5 @@ CREATE TABLE IF NOT EXISTS assistencia_social (
     CONSTRAINT uq_assistencia_crianca UNIQUE (crianca_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_children_bairro   ON children(bairro);
-CREATE INDEX IF NOT EXISTS idx_children_revisado  ON children(revisado);
-CREATE INDEX IF NOT EXISTS idx_frequencia_educ_id ON frequencia_log(educacao_id);
+CREATE INDEX IF NOT EXISTS idx_children_bairro  ON children(bairro);
+CREATE INDEX IF NOT EXISTS idx_children_revisado ON children(revisado);
