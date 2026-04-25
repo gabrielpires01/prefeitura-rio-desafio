@@ -1,8 +1,8 @@
 # Desafio Técnico — Full-stack Pleno
 
-## Instruções
+# Instruções
 
-# Deploy
+## Deploy
 Projeto disponível em: [Link](https://prefeitura-rio-desafio.vercel.app/)
 
 ou
@@ -40,6 +40,9 @@ Para rodar localmente:
 - **Segurança**: Implementaria uma camada de segurança mais robusta, como criptografia de senhas e proteção contra ataques comuns (ex: SQL injection, XSS).
 - **APIs**: Adicionaria mais endpoints para permitir operações adicionais, como criação, atualização e exclusão de crianças, além de endpoints para gerenciar técnicos e suas permissões.
 - **Acessibilidade**: Investiria mais tempo em garantir que a interface seja acessível para todos os usuários, incluindo aqueles com deficiências, seguindo as diretrizes de acessibilidade da web (WCAG).
+
+
+---
 
 ## Contexto
 
