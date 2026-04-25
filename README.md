@@ -31,6 +31,51 @@ Para rodar localmente:
 - **Seed ao iniciar**: Optei por carregar os dados do `data/seed.json` diretamente na memória ao iniciar o servidor, poderia ter feito por migração que surgiria quase o mesmo efeito e seria verificado apenas 1x em um unico servidor, contra a escolha de ao inciar o servidor que iria checar se a base está vazia sempre que o deploys atualizasse.
 - **Dados faltantes**: A opção que abordei para lidar com esse caso é apenas informar que a criança não tem dados para aquela área, idealmente deveria notificar o técnico e o serviço faltante para que esse problema seja resolvido em um tempo determinado, essa abordagem não foi feita dado o desconhecimento na profundidade e contexto do projeto.
 
+### Testes
+
+![Coverage](docs/coverage.svg)
+
+#### Cobertura por pacote (unit + integration)
+
+Os pacotes `cmd/api` e `internal/database` são excluídos por serem infraestrutura de inicialização sem lógica testável.
+
+| Pacote | Cobertura | Tipo |
+|---|---|---|
+| `internal/config` | 100% | Unit |
+| `internal/middleware` | 100% | Unit |
+| `internal/domain` | 100% | Unit + Integration |
+| `internal/handler` | 98% | Unit |
+| `internal/service` | 97% | Unit |
+| `internal/repository` | 88.6% | Integration |
+| **Total** | **96%** | |
+
+#### Como rodar os testes
+
+**Testes unitários** (sem dependências externas):
+```bash
+cd backend
+go test ./...
+```
+ou
+```bash
+./scripts/test.sh
+```
+
+**Testes de integração** (requer Docker em execução):
+```bash
+cd backend
+go test -tags integration -timeout 120s ./...
+```
+ou
+```bash
+./scripts/test-integration.sh
+```
+
+**Todos os testes com cobertura** (exclui pacotes de infraestrutura):
+```bash
+./scripts/test-coverage.sh
+```
+
 ### Frontend
 - **Vitest e React Testing Library(RTL)**: Optei por usar o Vitest para os testes, pois é uma ferramenta leve e fácil de configurar, além de ser compatível com o Next.js e TypeScript.
 - **Leaflet**: Para a visualização de mapas, escolhi o Leaflet por ser uma biblioteca de código aberto e amplamente utilizada para mapas interativos, além de ser fácil de integrar com React e também eu tinha algum conhecimento anterior em estágio.
@@ -44,9 +89,10 @@ Para rodar localmente:
 - Principalmente entenderia mais profundamente o contexto do projeto, para entender melhor as necessidades dos técnicos de campo e como eles usam o painel e também a necessidade das crianças e instituições, isso ajudaria a tomar decisões mais informadas sobre a interface e funcionalidades. Com um melhor conhecimento do contexto apra qual estou desenvolvemtne aplicar Engenharia de Software deixaria o projeto mais robusto e fácil de ser desenvolvido.
 - **Backend**: Mudaria o seed para ser feito por migração, isso facilitaria a manutenção e o controle dos dados, além de ser mais escalável para um ambiente de produção.
 - **Frontend**: Adicionaria mais visualizações, como gráficos e mapas, para ajudar os técnicos a entender melhor os dados e identificar padrões ou áreas de preocupação. A criação dos gráficos acredito também que vem muito do estudo do que é necessário e o que precisamos ver nessas crianças e que ações podemos tomar.
-- **Segurança**: Implementaria uma camada de segurança mais robusta, como criptografia de senhas e proteção contra ataques comuns (ex: SQL injection, XSS).
+- **Segurança**: Implementaria uma camada de segurança mais robusta, como criptografia de senhas e proteção contra ataques comuns, ainda mais por conta dos dados da crianças e LGPD (ex: SQL injection, XSS).
 - **APIs**: Adicionaria mais endpoints para permitir operações adicionais, como criação, atualização e exclusão de crianças, além de endpoints para gerenciar técnicos e suas permissões.
 - **Acessibilidade**: Investiria mais tempo em garantir que a interface seja acessível para todos os usuários, incluindo aqueles com deficiências, seguindo as diretrizes de acessibilidade da web (WCAG).
+- **Redis**: Adicionaria uma camada de cache usando Redis para melhorar a performance da aplicação, especialmente para os endpoints que agregam dados ou que são acessados com frequência.
 
 
 ---

@@ -8,6 +8,8 @@
 ### Backend (Go)
 - `go run cmd/api/main.go`: Executa o servidor localmente.
 - `go test ./...`: Executa todos os testes unitários.
+- `go test -tags integration -timeout 120s ./...`: Executa testes de integração (requer Docker).
+- `./scripts/test-coverage.sh`: Todos os testes com cobertura, excluindo pacotes de infraestrutura (`cmd/api`, `internal/database`).
 - `go mod tidy`: Limpa e atualiza dependências.
 
 ### Frontend (Next.js)
