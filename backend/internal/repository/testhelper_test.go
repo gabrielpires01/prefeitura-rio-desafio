@@ -5,6 +5,7 @@ package repository_test
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"testing"
 
@@ -18,11 +19,9 @@ import (
 	"github.com/prefeiturario/painel-social/internal/database"
 )
 
-// newTestDB spins up a disposable PostgreSQL container, runs the schema
-// migration and seeds it from the shared seed.json. The container is
-// terminated automatically when t finishes.
-func newTestDB(t *testing.T) *gorm.DB {
-	t.Helper()
+var sharedDB *gorm.DB
+
+func TestMain(m *testing.M) {
 	ctx := context.Background()
 
 	pgC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -39,27 +38,55 @@ func newTestDB(t *testing.T) *gorm.DB {
 		},
 		Started: true,
 	})
-	require.NoError(t, err)
-	t.Cleanup(func() { _ = pgC.Terminate(ctx) })
+	if err != nil {
+		log.Fatalf("start postgres container: %v", err)
+	}
+	defer func() { _ = pgC.Terminate(ctx) }()
 
 	host, err := pgC.Host(ctx)
-	require.NoError(t, err)
+	if err != nil {
+		log.Fatalf("container host: %v", err)
+	}
 	port, err := pgC.MappedPort(ctx, "5432")
-	require.NoError(t, err)
+	if err != nil {
+		log.Fatalf("container port: %v", err)
+	}
 
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=test password=test dbname=testdb sslmode=disable",
 		host, port.Port(),
 	)
-	db, err := gorm.Open(gpostgres.Open(dsn), &gorm.Config{
+	sharedDB, err = gorm.Open(gpostgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
-	require.NoError(t, err)
+	if err != nil {
+		log.Fatalf("open gorm: %v", err)
+	}
 
 	migSQL, err := os.ReadFile("../database/migrations/001_init.sql")
-	require.NoError(t, err)
-	require.NoError(t, db.Exec(string(migSQL)).Error)
+	if err != nil {
+		log.Fatalf("read migration: %v", err)
+	}
+	if err = sharedDB.Exec(string(migSQL)).Error; err != nil {
+		log.Fatalf("run migration: %v", err)
+	}
 
-	require.NoError(t, database.SeedIfEmpty(db, "../database/data/seed.json"))
-	return db
+	if err = database.SeedIfEmpty(sharedDB, "../database/data/seed.json"); err != nil {
+		log.Fatalf("seed: %v", err)
+	}
+
+	os.Exit(m.Run())
+}
+
+func newTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+	return sharedDB
+}
+
+func newTestTx(t *testing.T) *gorm.DB {
+	t.Helper()
+	tx := sharedDB.Begin()
+	require.NoError(t, tx.Error)
+	t.Cleanup(func() { tx.Rollback() })
+	return tx
 }

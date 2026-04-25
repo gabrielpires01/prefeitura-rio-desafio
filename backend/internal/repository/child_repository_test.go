@@ -213,7 +213,7 @@ func TestChildRepository_GetByID_AlertsLoaded(t *testing.T) {
 
 func TestChildRepository_MarkReviewed_Success(t *testing.T) {
 	// c004 starts as revisado=false
-	repo := repository.NewChildRepository(newTestDB(t))
+	repo := repository.NewChildRepository(newTestTx(t))
 
 	err := repo.MarkReviewed("c004", "auditor@test.com")
 	require.NoError(t, err)
@@ -228,7 +228,7 @@ func TestChildRepository_MarkReviewed_Success(t *testing.T) {
 }
 
 func TestChildRepository_MarkReviewed_NotFound(t *testing.T) {
-	repo := repository.NewChildRepository(newTestDB(t))
+	repo := repository.NewChildRepository(newTestTx(t))
 
 	err := repo.MarkReviewed("ghost", "auditor@test.com")
 	assert.ErrorIs(t, err, sql.ErrNoRows)
@@ -236,7 +236,7 @@ func TestChildRepository_MarkReviewed_NotFound(t *testing.T) {
 
 func TestChildRepository_MarkReviewed_AlreadyReviewed(t *testing.T) {
 	// c003 is already revisado=true; marking it again should succeed (idempotent update)
-	repo := repository.NewChildRepository(newTestDB(t))
+	repo := repository.NewChildRepository(newTestTx(t))
 
 	err := repo.MarkReviewed("c003", "another@test.com")
 	require.NoError(t, err)
