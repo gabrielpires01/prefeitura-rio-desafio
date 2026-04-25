@@ -1,71 +1,75 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getSummary } from "@/lib/api";
+import { getChildren, getSummary } from "@/lib/api";
 import {
     Users,
     Heart,
     BookOpen,
     HandHeart,
     CheckCircle2,
-    AlertTriangle,
     Database,
 } from "lucide-react";
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Cell,
-} from "recharts";
-import { cn } from "@/lib/utils";
 import type { Summary } from "@/types";
 import dynamic from "next/dynamic";
-import dataMock from "../../../../data/seed.json";
+import { StatCard } from "@/components/shared/stat-card";
+import { AlertBanner } from "@/components/dashboard/alert-banner";
+import { AlertsBarChart } from "@/components/dashboard/alerts-bar-chart";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const AREA_COLORS = {
-    saude: "#ef4444",
-    educacao: "#f59e0b",
-    assistencia: "#8b5cf6",
-};
-
-function StatCard({
-    label,
-    value,
-    sub,
-    icon: Icon,
-    iconColor,
-    iconBg,
-}: {
-    label: string;
-    value: number;
-    sub?: string;
-    icon: React.ElementType;
-    iconColor: string;
-    iconBg: string;
-}) {
-    return (
-        <div className="bg-card rounded-xl border border-border p-4 flex flex-col gap-3">
-            <div
-                className={cn(
-                    "w-9 h-9 rounded-lg flex items-center justify-center",
-                    iconBg
-                )}
-            >
-                <Icon className={cn("w-4 h-4", iconColor)} />
-            </div>
-            <div>
-                <p className="text-2xl font-bold tabular-nums">{value}</p>
-                {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
-                <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                    {label}
-                </p>
-            </div>
+const MapComponent = dynamic(() => import("@/components/map"), {
+    ssr: false,
+    loading: () => (
+        <div className="h-[300px] flex items-center justify-center text-muted-foreground text-sm">
+            Carregando mapa...
         </div>
-    );
-}
+    ),
+});
+
+const STAT_CARDS = (summary: Summary) => [
+    {
+        label: "Total de Crianças",
+        value: summary.total_criancas,
+        icon: Users,
+        iconColor: "text-primary",
+        iconBg: "bg-primary/10",
+    },
+    {
+        label: "Alertas de Saúde",
+        value: summary.com_alertas_saude,
+        icon: Heart,
+        iconColor: "text-red-500",
+        iconBg: "bg-red-50 dark:bg-red-950/30",
+    },
+    {
+        label: "Alertas de Educação",
+        value: summary.com_alertas_educacao,
+        icon: BookOpen,
+        iconColor: "text-amber-500",
+        iconBg: "bg-amber-50 dark:bg-amber-950/30",
+    },
+    {
+        label: "Alertas Assist. Social",
+        value: summary.com_alertas_assistencia_social,
+        icon: HandHeart,
+        iconColor: "text-violet-500",
+        iconBg: "bg-violet-50 dark:bg-violet-950/30",
+    },
+    {
+        label: "Revisadas",
+        value: summary.revisadas,
+        sub: `de ${summary.total_criancas} crianças`,
+        icon: CheckCircle2,
+        iconColor: "text-emerald-500",
+        iconBg: "bg-emerald-50 dark:bg-emerald-950/30",
+    },
+    {
+        label: "Sem Dados em Nenhuma Área",
+        value: summary.sem_dados,
+        icon: Database,
+        iconColor: "text-slate-400",
+        iconBg: "bg-slate-100 dark:bg-slate-800/50",
+    },
+];
 
 function DashboardContent({ summary }: { summary: Summary }) {
     const totalAlerts =
@@ -73,69 +77,16 @@ function DashboardContent({ summary }: { summary: Summary }) {
         summary.com_alertas_educacao +
         summary.com_alertas_assistencia_social;
 
-    const chartData = [
-        {
-            area: "Saúde",
-            alertas: summary.com_alertas_saude,
-            fill: AREA_COLORS.saude,
-        },
-        {
-            area: "Educação",
-            alertas: summary.com_alertas_educacao,
-            fill: AREA_COLORS.educacao,
-        },
-        {
-            area: "Assist. Social",
-            alertas: summary.com_alertas_assistencia_social,
-            fill: AREA_COLORS.assistencia,
-        },
-    ];
+    const params = {
+        bairro: undefined,
+        com_alertas: undefined,
+        revisado: undefined,
+    };
 
-    const cards = [
-        {
-            label: "Total de Crianças",
-            value: summary.total_criancas,
-            icon: Users,
-            iconColor: "text-primary",
-            iconBg: "bg-primary/10",
-        },
-        {
-            label: "Alertas de Saúde",
-            value: summary.com_alertas_saude,
-            icon: Heart,
-            iconColor: "text-red-500",
-            iconBg: "bg-red-50 dark:bg-red-950/30",
-        },
-        {
-            label: "Alertas de Educação",
-            value: summary.com_alertas_educacao,
-            icon: BookOpen,
-            iconColor: "text-amber-500",
-            iconBg: "bg-amber-50 dark:bg-amber-950/30",
-        },
-        {
-            label: "Alertas Assist. Social",
-            value: summary.com_alertas_assistencia_social,
-            icon: HandHeart,
-            iconColor: "text-violet-500",
-            iconBg: "bg-violet-50 dark:bg-violet-950/30",
-        },
-        {
-            label: "Revisadas",
-            value: summary.revisadas,
-            sub: `de ${summary.total_criancas} crianças`,
-            icon: CheckCircle2,
-            iconColor: "text-emerald-500",
-            iconBg: "bg-emerald-50 dark:bg-emerald-950/30",
-        },
-        {
-            label: "Sem Dados em Nenhuma Área",
-            value: summary.sem_dados,
-            icon: Database,
-            iconColor: "text-slate-400",
-            iconBg: "bg-slate-100 dark:bg-slate-800/50",
-        },
-    ];
+    const { data, isLoading, isFetching } = useQuery({
+        queryKey: ["children", params],
+        queryFn: () => getChildren(params),
+    });
 
     return (
         <div className="space-y-6 max-w-5xl">
@@ -146,140 +97,55 @@ function DashboardContent({ summary }: { summary: Summary }) {
                 </p>
             </div>
 
-            {totalAlerts > 0 && (
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                            {totalAlerts}{" "}
-                            {totalAlerts === 1
-                                ? "criança necessita"
-                                : "crianças necessitam"}{" "}
-                            de atenção
-                        </p>
-                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-0.5">
-                            Casos com alertas ativos aguardando revisão técnica
-                        </p>
-                    </div>
-                </div>
-            )}
+            <AlertBanner totalAlerts={totalAlerts} />
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {cards.map((c) => (
-                    <StatCard key={c.label} {...c} />
+                {STAT_CARDS(summary).map((card) => (
+                    <StatCard key={card.label} {...card} />
                 ))}
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
-                <h2 className="text-sm font-semibold mb-5">Alertas por Área</h2>
-                <ResponsiveContainer width="100%" height={220}>
-                    <BarChart
-                        data={chartData}
-                        margin={{ top: 4, right: 4, left: -24, bottom: 0 }}
-                    >
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            vertical={false}
-                            stroke="hsl(var(--border))"
-                        />
-                        <XAxis
-                            dataKey="area"
-                            tick={{
-                                fontSize: 12,
-                                fill: "hsl(var(--muted-foreground))",
-                            }}
-                            axisLine={false}
-                            tickLine={false}
-                        />
-                        <YAxis
-                            tick={{
-                                fontSize: 12,
-                                fill: "hsl(var(--muted-foreground))",
-                            }}
-                            axisLine={false}
-                            tickLine={false}
-                            allowDecimals={false}
-                        />
-                        <Tooltip
-                            cursor={{ fill: "hsl(var(--muted))", radius: 6 }}
-                            contentStyle={{
-                                borderRadius: "10px",
-                                border: "1px solid hsl(var(--border))",
-                                background: "hsl(var(--card))",
-                                color: "hsl(var(--foreground))",
-                                fontSize: "13px",
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
-                            }}
-                            itemStyle={{ color: "hsl(var(--foreground))" }}
-                            formatter={(v) => {
-                                const n = Number(v);
-                                return [
-                                    `${n} criança${n !== 1 ? "s" : ""}`,
-                                    "Alertas",
-                                ];
-                            }}
-                        />
-                        <Bar
-                            dataKey="alertas"
-                            radius={[6, 6, 0, 0]}
-                            maxBarSize={80}
-                        >
-                            {chartData.map((entry, i) => (
-                                <Cell key={i} fill={entry.fill} />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
+            <AlertsBarChart
+                saude={summary.com_alertas_saude}
+                educacao={summary.com_alertas_educacao}
+                assistencia={summary.com_alertas_assistencia_social}
+            />
 
-            <div className="bg-card rounded-xl border border-border p-5 h-100 flex justify-center flex-col">
-                <h2 className="text-sm font-semibold mb-5">Mapa de calor de vulnerabilidade</h2>
-                <div
-                    style={{
-                        marginTop: "2rem",
-                        width: "100%",
-                        border: "1px solid #ccc",
-                        borderRadius: "8px",
-                        overflow: "hidden",
-                    }}
-                >
-                    <MapComponent data={dataMock} />
+            {isLoading || isFetching ? (
+                <Skeleton className="h-72 rounded-xl" />
+            ) : (
+                <div className="bg-card rounded-xl border border-border p-5 h-100 flex justify-center flex-col">
+                    <h2 className="text-sm font-semibold mb-5">
+                        Mapa de Calor de Vulnerabilidade
+                    </h2>
+                    <div
+                        style={{
+                            marginTop: "2rem",
+                            width: "100%",
+                            border: "1px solid #ccc",
+                            borderRadius: "8px",
+                            overflow: "hidden",
+                        }}
+                    >
+                        <MapComponent data={data?.children || []} />
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
 
-const MapComponent = dynamic(() => import("@/components/map"), {
-    ssr: false,
-    loading: () => (
-        <div
-            style={{
-                height: "300px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-            }}
-        >
-            Carregando mapa...
-        </div>
-    ),
-});
-
-function Skeleton() {
+function DashboardSkeleton() {
     return (
-        <div className="space-y-6 animate-pulse max-w-5xl">
-            <div className="h-7 bg-muted rounded w-40" />
-            <div className="h-14 bg-muted rounded-xl" />
+        <div className="space-y-6 max-w-5xl">
+            <Skeleton className="h-7 w-40" />
+            <Skeleton className="h-14 rounded-xl" />
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                    <div
-                        key={i}
-                        className="bg-card rounded-xl border border-border h-28"
-                    />
+                    <Skeleton key={i} className="h-28 rounded-xl" />
                 ))}
             </div>
-            <div className="bg-card rounded-xl border border-border h-72" />
+            <Skeleton className="h-72 rounded-xl" />
         </div>
     );
 }
@@ -289,7 +155,8 @@ export default function DashboardPage() {
         queryKey: ["summary"],
         queryFn: getSummary,
     });
-    if (isLoading) return <Skeleton />;
+
+    if (isLoading) return <DashboardSkeleton />;
     if (!data) return null;
     return <DashboardContent summary={data} />;
 }

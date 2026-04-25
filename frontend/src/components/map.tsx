@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
+import { Child } from '@/types';
 
 const favelaCoords: Record<string, [number, number]> = {
   "Rocinha": [-22.9886, -43.2483],
@@ -13,10 +14,10 @@ const favelaCoords: Record<string, [number, number]> = {
   "Mangueira": [-22.9038, -43.2372]
 };
 
-export default function Map({ data }: { data: any[] }) {
+export default function Map({ data }: { data: Child[] }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
-  const heatLayerInstance = useRef<any>(null);
+  const heatLayerInstance = useRef<L.HeatLayer | null>(null);
   
   const [hasDimensions, setHasDimensions] = useState(false);
 
@@ -71,7 +72,7 @@ export default function Map({ data }: { data: any[] }) {
     const size = mapInstance.current.getSize();
     if (size.x === 0 || size.y === 0) return;
 
-    heatLayerInstance.current = (L as any).heatLayer(heatData, {
+    heatLayerInstance.current = L.heatLayer(heatData, {
       radius: 35,
       blur: 25,
       maxZoom: 13,
