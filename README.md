@@ -1,5 +1,46 @@
 # Desafio Técnico — Full-stack Pleno
 
+## Instruções
+
+# Deploy
+Projeto disponível em: [Link](https://prefeitura-rio-desafio.vercel.app/)
+
+ou
+
+Para rodar localmente:
+1. Clone o repositório
+2. Acesse a pasta do projeto: `cd prefeitura-rio-desafio`
+    1. Se quiser crie um arquivo `.env` na raiz do projeto baseado no `.env.example`.
+3. Suba os containers: `docker compose up`
+4. Acesse `http://localhost:3000` ou onde configurar no `.env` no seu navegador
+
+
+## Decisões arquiteturais e trade-offs
+
+### Pensamento e Arquitetura
+- Models, Arquitetura e Fluxo de Uso estão no arquivo `docs/architecture.md`
+
+### Backend
+- **Go 1.24+ com Gin**: Escolhi Go por conveniência pessoal e querer aprender mais sobre a linguagem. Acredito que qualquer linguagem poderia ser usada para esse desafio e iria ter a mesma perfomance e velocidade de desenvolvimento.
+- **Seed ao iniciar**: Optei por carregar os dados do `data/seed.json` diretamente na memória ao iniciar o servidor, poderia ter feito por migração que surgiria quase o mesmo efeito e seria verificado apenas 1x em um unico servidor, contra a escolha de ao inciar o servidor que iria checar se a base está vazia sempre que o deploys atualizasse.
+- **Dados faltantes**: A opção que abordei para lidar com esse caso é apenas informar que a criança não tem dados para aquela área, idealmente deveria notificar o técnico e o serviço faltante para que esse problema seja resolvido em um tempo determinado, essa abordagem não foi feita dado o desconhecimento na profundidade e contexto do projeto.
+
+### Frontend
+- **Vitest e React Testing Library(RTL)**: Optei por usar o Vitest para os testes, pois é uma ferramenta leve e fácil de configurar, além de ser compatível com o Next.js e TypeScript.
+- **Leaflet**: Para a visualização de mapas, escolhi o Leaflet por ser uma biblioteca de código aberto e amplamente utilizada para mapas interativos, além de ser fácil de integrar com React e também eu tinha algum conhecimento anterior em estágio.
+
+### Credenciais de teste
+- login: `tecnico@prefeitura.rio`
+- senha: `painel@2024`
+
+
+### O que faria diferente com mais tempo
+- Principalmente entenderia mais profundamente o contexto do projeto, para entender melhor as necessidades dos técnicos de campo e como eles usam o painel e também a necessidade das crianças e instituições, isso ajudaria a tomar decisões mais informadas sobre a interface e funcionalidades. Com um melhor conhecimento do contexto apra qual estou desenvolvemtne aplicar Engenharia de Software deixaria o projeto mais robusto e fácil de ser desenvolvido.
+- **Backend**: Mudaria o seed para ser feito por migração, isso facilitaria a manutenção e o controle dos dados, além de ser mais escalável para um ambiente de produção.
+- **Segurança**: Implementaria uma camada de segurança mais robusta, como criptografia de senhas e proteção contra ataques comuns (ex: SQL injection, XSS).
+- **APIs**: Adicionaria mais endpoints para permitir operações adicionais, como criação, atualização e exclusão de crianças, além de endpoints para gerenciar técnicos e suas permissões.
+- **Acessibilidade**: Investiria mais tempo em garantir que a interface seja acessível para todos os usuários, incluindo aqueles com deficiências, seguindo as diretrizes de acessibilidade da web (WCAG).
+
 ## Contexto
 
 A Prefeitura acompanha crianças em situação de vulnerabilidade social cruzando informações de três áreas: saúde, educação e assistência social. Os técnicos de campo precisam de um painel para identificar rapidamente quais crianças têm alertas ativos — vacinas atrasadas, frequência escolar baixa, benefícios suspensos — e registrar o acompanhamento realizado.
