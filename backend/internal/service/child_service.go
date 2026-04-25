@@ -13,10 +13,10 @@ import (
 var ErrNotFound = errors.New("não encontrado")
 
 type ChildService struct {
-	repo *repository.ChildRepository
+	repo repository.ChildRepositorier
 }
 
-func NewChildService(repo *repository.ChildRepository) *ChildService {
+func NewChildService(repo repository.ChildRepositorier) *ChildService {
 	return &ChildService{repo: repo}
 }
 

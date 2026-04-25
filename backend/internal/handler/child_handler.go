@@ -10,10 +10,10 @@ import (
 )
 
 type ChildHandler struct {
-	svc *service.ChildService
+	svc service.ChildServicer
 }
 
-func NewChildHandler(svc *service.ChildService) *ChildHandler {
+func NewChildHandler(svc service.ChildServicer) *ChildHandler {
 	return &ChildHandler{svc: svc}
 }
 

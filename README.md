@@ -17,6 +17,12 @@ Para rodar localmente:
 
 ## Decisões arquiteturais e trade-offs
 
+## IA e seu uso
+- Fiz o uso o Claude Code para me ajudar a estruturar o projeto.
+- A decisão pelo uso da IA foi para eu pode me concentar melhor na rquitetura e no planejamento do projeto do que somente em codificar, a IA me ajudou a estruturar o projeto e me dar uma visão geral do que eu precisava fazer, isso me ajudou a economizar tempo e me concentrar melhor no desenvolvimento.
+- No contexto de IA acredito que ela seja inevitável e que seja uma ferramenta extramente útil se usada de forma consciente, ela ganha tempo no desenvolvimento enquanto pesquisamos e pensamos em melhores estruturas, necessidades e melhor design do sistema em geral.
+- Fiz uso de skill que estão no meu escopo global que ajudam no desenvolvimento e acertividade de desenvolvimentos específicos, assim como a declaração do contexto do projeto no CLAUDE.md
+
 ### Pensamento e Arquitetura
 - Models, Arquitetura e Fluxo de Uso estão no arquivo `docs/architecture.md`
 
@@ -37,6 +43,7 @@ Para rodar localmente:
 ### O que faria diferente com mais tempo
 - Principalmente entenderia mais profundamente o contexto do projeto, para entender melhor as necessidades dos técnicos de campo e como eles usam o painel e também a necessidade das crianças e instituições, isso ajudaria a tomar decisões mais informadas sobre a interface e funcionalidades. Com um melhor conhecimento do contexto apra qual estou desenvolvemtne aplicar Engenharia de Software deixaria o projeto mais robusto e fácil de ser desenvolvido.
 - **Backend**: Mudaria o seed para ser feito por migração, isso facilitaria a manutenção e o controle dos dados, além de ser mais escalável para um ambiente de produção.
+- **Frontend**: Adicionaria mais visualizações, como gráficos e mapas, para ajudar os técnicos a entender melhor os dados e identificar padrões ou áreas de preocupação. A criação dos gráficos acredito também que vem muito do estudo do que é necessário e o que precisamos ver nessas crianças e que ações podemos tomar.
 - **Segurança**: Implementaria uma camada de segurança mais robusta, como criptografia de senhas e proteção contra ataques comuns (ex: SQL injection, XSS).
 - **APIs**: Adicionaria mais endpoints para permitir operações adicionais, como criação, atualização e exclusão de crianças, além de endpoints para gerenciar técnicos e suas permissões.
 - **Acessibilidade**: Investiria mais tempo em garantir que a interface seja acessível para todos os usuários, incluindo aqueles com deficiências, seguindo as diretrizes de acessibilidade da web (WCAG).

@@ -8,7 +8,7 @@ import (
 	"github.com/prefeiturario/painel-social/internal/service"
 )
 
-func Auth(authSvc *service.AuthService) gin.HandlerFunc {
+func Auth(authSvc service.AuthServicer) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 		if !strings.HasPrefix(header, "Bearer ") {
