@@ -76,6 +76,20 @@ ou
 ./scripts/test-coverage.sh
 ```
 
+**Testes E2E**:
+```bash
+cd e2e
+npm install
+npm test
+```
+
+**Testes de frontend** (com Vitest):
+```bash
+cd frontend
+npm install
+npm test
+```
+
 ### Frontend
 - **Vitest e React Testing Library(RTL)**: Optei por usar o Vitest para os testes, pois é uma ferramenta leve e fácil de configurar, além de ser compatível com o Next.js e TypeScript.
 - **Leaflet**: Para a visualização de mapas, escolhi o Leaflet por ser uma biblioteca de código aberto e amplamente utilizada para mapas interativos, além de ser fácil de integrar com React e também eu tinha algum conhecimento anterior em estágio.
