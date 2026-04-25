@@ -40,19 +40,19 @@ func main() {
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     cfg.AllowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PATCH", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
-
 	r.POST("/auth/token", authHandler.Login)
-	r.GET("/summary", childHandler.Summary)
-	r.GET("/children", childHandler.List)
-	r.GET("/children/:id", childHandler.GetByID)
 
 	authorized := r.Group("/")
 	authorized.Use(middleware.Auth(authSvc))
+
+	authorized.GET("/summary", childHandler.Summary)
+	authorized.GET("/children", childHandler.List)
+	authorized.GET("/children/:id", childHandler.GetByID)
 	authorized.PATCH("/children/:id/review", childHandler.Review)
 
 	log.Printf("servidor iniciando na porta :%s", cfg.Port)

@@ -1,0 +1,29 @@
+databases:
+  - name: painel-social-db
+    databaseName: painel_social
+    user: prefeitura
+    plan: free
+
+services:
+  - type: web
+    name: painel-social-backend
+    runtime: go
+    rootDir: backend
+    buildCommand: go build -o server ./cmd/api
+    startCommand: ./server
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: painel-social-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 8080
+      - key: GIN_MODE
+        value: release
+      - key: SEED_FILE
+        value: data/seed.json
+      - key: ALLOWED_ORIGINS
+        sync: false  # Set manually in Render dashboard after Vercel deploy

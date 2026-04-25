@@ -2,13 +2,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: prefeitura
-      POSTGRES_PASSWORD: prefeitura123
-      POSTGRES_DB: painel_social
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U prefeitura -d painel_social"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -16,12 +16,12 @@ services:
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgres://prefeitura:prefeitura123@postgres:5432/painel_social?sslmode=disable
-      JWT_SECRET: super-secret-jwt-key-change-in-production
-      PORT: 8080
-      SEED_FILE: /app/data/seed.json
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT:-8080}
+      SEED_FILE: ${SEED_FILE:-/app/data/seed.json}
     ports:
-      - "8080:8080"
+      - "${PORT:-8080}:${PORT:-8080}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -31,8 +31,8 @@ services:
   frontend:
     build: ./frontend
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8080
-      API_URL: http://backend:8080
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      API_URL: ${API_URL:-http://backend:8080}
     ports:
       - "3000:3000"
     depends_on:

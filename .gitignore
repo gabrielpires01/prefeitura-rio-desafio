@@ -1,4 +1,15 @@
+# Environment — never commit real credentials
+.env
+.env.local
+.env.*.local
+
+# Next.js
 frontend/.next/
+frontend/out/
+
+# Node
 node_modules/
+frontend/node_modules/
+
+# OS
 .DS_Store
-/out/
