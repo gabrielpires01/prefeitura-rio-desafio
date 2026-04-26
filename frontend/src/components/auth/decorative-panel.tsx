@@ -25,7 +25,7 @@ export function DecorativePanel() {
 
       <div className="relative z-10 flex flex-col h-full items-center justify-center p-16 text-center">
         <div className="w-28 h-28 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center mb-8 backdrop-blur-sm">
-          <CityLogo className="w-16 h-16 text-white" />
+          <CityLogo />
         </div>
 
         <h1 className="font-display text-5xl font-bold text-white leading-tight mb-4">

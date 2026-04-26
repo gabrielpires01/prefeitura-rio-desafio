@@ -23,7 +23,7 @@ export function Sidebar({ onClose, onLogout }: SidebarProps) {
       <div className="flex items-center justify-between p-5 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
-            <CityLogo className="w-5 h-5 text-white" />
+            <CityLogo />
           </div>
           <div>
             <p className="text-white text-sm font-bold leading-tight">Painel Social</p>

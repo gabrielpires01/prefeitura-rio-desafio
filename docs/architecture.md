@@ -156,7 +156,10 @@ Preload na consulta:
 │            docker-compose.yml            │
 │                                          │
 │  postgres:5432  ──▶  backend:8080        │
-│  (healthcheck)       (aguarda o pg)      │
+│  (healthcheck)       (aguarda o pg       │
+│                       e o redis)         │
+│  redis:6379     ──▶  backend:8080        │
+│  (healthcheck)                           │
 │                                          │
 │  frontend:3000  ──▶  backend:8080        │
 │  (Next.js)           (via API_URL)       │

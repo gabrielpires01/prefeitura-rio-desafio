@@ -31,7 +31,7 @@ export function LoginForm({ onLogin, error }: LoginFormProps) {
       <div className="w-full max-w-sm">
         <div className="lg:hidden text-center mb-10">
           <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
-            <CityLogo className="w-10 h-10 text-white" />
+            <CityLogo />
           </div>
           <h1 className="font-display text-2xl font-bold">Painel Social</h1>
           <p className="text-muted-foreground text-sm">
