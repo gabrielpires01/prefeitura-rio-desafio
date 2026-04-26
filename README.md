@@ -35,10 +35,15 @@ Para rodar localmente:
 - **Seed ao iniciar**: Optei por carregar os dados do `data/seed.json` diretamente na memória ao iniciar o servidor, poderia ter feito por migração que surgiria quase o mesmo efeito e seria verificado apenas 1x em um unico servidor, contra a escolha de ao inciar o servidor que iria checar se a base está vazia sempre que o deploys atualizasse.
 - **Dados faltantes**: A opção que abordei para lidar com esse caso é apenas informar que a criança não tem dados para aquela área, idealmente deveria notificar o técnico e o serviço faltante para que esse problema seja resolvido em um tempo determinado, essa abordagem não foi feita dado o desconhecimento na profundidade e contexto do projeto.
 - **Redis**: Optei por implementar o Redis para demonstração mais fiel de como seria um projeot em produção, o ache pode ajudar principalmente com usuário que tenham mais dificuldade de acesso a internet para não ter que fazer a mesma request algumas vezes. O redi não foi adicionado ao deploy devido ao custo.
+- **Testcontainers**: Optei por usar o Testcontainers para os testes de integração, pois ele permite criar um ambiente de teste isolado e consistente, garantindo que os testes sejam executados em um ambiente controlado e evitando dependências externas que possam afetar os resultados dos testes.
+- **GORM**: Escolhi o GORM como ORM para facilitar a interação com o banco de dados e adiciona mais algumas proteções de segurança.
+- **PostgreSQL**: Escolhi utilziar o Postgres pela sua facilidade, minha familiaridade e também por ser uma opeção gratis e bem usada no mercado.
 
 ### Frontend
 - **Vitest e React Testing Library(RTL)**: Optei por usar o Vitest para os testes, pois é uma ferramenta leve e fácil de configurar, além de ser compatível com o Next.js e TypeScript.
 - **Leaflet**: Para a visualização de mapas, escolhi o Leaflet por ser uma biblioteca de código aberto e amplamente utilizada para mapas interativos, além de ser fácil de integrar com React e também eu tinha algum conhecimento anterior em estágio.
+- **React Query**: Gerenciamento de request deixando mais limpo e legivel o código, além de facilitar o cache e a atualização dos dados.
+- **Recharts**: Para a visualização de gráficos, escolhi o Recharts por ser uma biblioteca de gráficos simples e fácil de usar, além de ser compatível com React e TypeScript.
 
 ### Testes
 
@@ -108,6 +113,7 @@ npm test
 - **Acessibilidade**: Investiria mais tempo em garantir que a interface seja acessível para todos os usuários, incluindo aqueles com deficiências, seguindo as diretrizes de acessibilidade da web (WCAG).
 - **Reverse Proxy**: Adicionaria um reverse proxy como Nginx para gerenciar melhor as requisições e a segurança da aplicação, além de facilitar o deploy em ambientes de produção.
 - **Documentação**: Criaria uma documentação mais detalhada para a API(ex: Swagger) e para o frontend, incluindo exemplos de uso.
+- **CI/CD**: Configuraria um pipeline de CI/CD para automatizar os testes e o deploy da aplicação, garantindo que as mudanças sejam testadas e implementadas de forma eficiente e segura.
 
 
 ---
