@@ -106,6 +106,8 @@ npm test
 - **Segurança**: Implementaria uma camada de segurança mais robusta, como criptografia de senhas e proteção contra ataques comuns, ainda mais por conta dos dados da crianças e LGPD (ex: SQL injection, XSS).
 - **APIs**: Adicionaria mais endpoints para permitir operações adicionais, como criação, atualização e exclusão de crianças, além de endpoints para gerenciar técnicos e suas permissões.
 - **Acessibilidade**: Investiria mais tempo em garantir que a interface seja acessível para todos os usuários, incluindo aqueles com deficiências, seguindo as diretrizes de acessibilidade da web (WCAG).
+- **Reverse Proxy**: Adicionaria um reverse proxy como Nginx para gerenciar melhor as requisições e a segurança da aplicação, além de facilitar o deploy em ambientes de produção.
+- **Documentação**: Criaria uma documentação mais detalhada para a API(ex: Swagger) e para o frontend, incluindo exemplos de uso.
 
 
 ---
