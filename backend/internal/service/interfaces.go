@@ -16,3 +16,12 @@ type ChildServicer interface {
 	MarkReviewed(id, reviewer string) error
 	Summary() (*domain.Summary, error)
 }
+
+type UserServicer interface {
+	CreateUser(fullName, email, password string) (*domain.User, error)
+	ListUsers() ([]domain.User, error)
+	GetUser(id string) (*domain.User, error)
+	UpdateUser(id, fullName, email string) (*domain.User, error)
+	ChangePassword(id, newPassword string) error
+	DeleteUser(id string) error
+}

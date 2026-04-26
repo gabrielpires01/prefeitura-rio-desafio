@@ -65,6 +65,17 @@ func (c *Child) HasAlerts() bool {
 	return false
 }
 
+type User struct {
+	ID           string    `gorm:"primaryKey;column:id;default:gen_random_uuid()" json:"id"`
+	FullName     string    `gorm:"column:full_name"             json:"full_name"`
+	Email        string    `gorm:"column:email"                 json:"email"`
+	PasswordHash string    `gorm:"column:password_hash"         json:"-"`
+	CreatedAt    time.Time `gorm:"column:created_at"            json:"created_at"`
+	UpdatedAt    time.Time `gorm:"column:updated_at"            json:"updated_at"`
+}
+
+func (User) TableName() string { return "users" }
+
 type ChildListParams struct {
 	Bairro     string
 	ComAlertas *bool

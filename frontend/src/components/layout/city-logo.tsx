@@ -1,13 +1,20 @@
 import Image from "next/image";
 import cityLogo from "@/assets/city-logo.png";
 
-export function CityLogo() {
+interface CityLogoProps {
+    className?: string;
+    width?: number;
+    height?: number;
+}
+
+export function CityLogo({ className, width = 200, height = 200 }: CityLogoProps) {
     return (
         <Image
             src={cityLogo}
             alt="City Logo"
-            width={200}
-            height={200}
+            width={width}
+            height={height}
+            className={className}
             style={{ borderRadius: "50%" }}
         />
     );

@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-//go:embed migrations/001_init.sql
+//go:embed migrations/*.sql
 var migrations embed.FS
 
 func Connect(dsn string) (*gorm.DB, error) {
@@ -34,9 +34,18 @@ func Connect(dsn string) (*gorm.DB, error) {
 }
 
 func Migrate(db *gorm.DB) error {
-	data, err := migrations.ReadFile("migrations/001_init.sql")
+	entries, err := migrations.ReadDir("migrations")
 	if err != nil {
-		return fmt.Errorf("ler migração: %w", err)
+		return fmt.Errorf("ler migrações: %w", err)
 	}
-	return db.Exec(string(data)).Error
+	for _, entry := range entries {
+		data, err := migrations.ReadFile("migrations/" + entry.Name())
+		if err != nil {
+			return fmt.Errorf("ler migração %s: %w", entry.Name(), err)
+		}
+		if err := db.Exec(string(data)).Error; err != nil {
+			return fmt.Errorf("executar migração %s: %w", entry.Name(), err)
+		}
+	}
+	return nil
 }

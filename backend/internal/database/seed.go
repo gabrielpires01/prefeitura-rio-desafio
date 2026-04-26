@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
 	"github.com/prefeiturario/painel-social/internal/domain"
@@ -128,6 +129,27 @@ func SeedIfEmpty(db *gorm.DB, seedFile string) error {
 		}
 		return nil
 	})
+}
+
+func SeedDefaultUser(db *gorm.DB) error {
+	var count int64
+	if err := db.Model(&domain.User{}).Count(&count).Error; err != nil {
+		return fmt.Errorf("verificar usuários: %w", err)
+	}
+	if count > 0 {
+		return nil
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte("painel@2024"), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("hash de senha: %w", err)
+	}
+	user := domain.User{
+		FullName:     "Técnico",
+		Email:        "tecnico@prefeitura.rio",
+		PasswordHash: string(hash),
+	}
+	return db.Create(&user).Error
 }
 
 func newUUID() string {

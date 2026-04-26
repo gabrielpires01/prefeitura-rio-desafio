@@ -22,7 +22,7 @@ test.describe("Dashboard", () => {
   });
 
   test("renders alerts bar chart", async ({ page }) => {
-    await expect(page.locator("svg").first()).toBeVisible();
+    await expect(page.locator("svg.recharts-surface")).toBeVisible();
   });
 
   test("navigating to /children works via URL", async ({ page }) => {

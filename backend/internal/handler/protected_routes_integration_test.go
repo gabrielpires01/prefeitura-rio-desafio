@@ -22,12 +22,12 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"github.com/prefeiturario/painel-social/internal/cache"
 	"github.com/prefeiturario/painel-social/internal/database"
 	"github.com/prefeiturario/painel-social/internal/handler"
 	"github.com/prefeiturario/painel-social/internal/middleware"
 	"github.com/prefeiturario/painel-social/internal/repository"
 	"github.com/prefeiturario/painel-social/internal/service"
-	"github.com/prefeiturario/painel-social/internal/cache"
 )
 
 const testJWTSecret = "integration-test-secret"
@@ -77,16 +77,18 @@ func TestMain(m *testing.M) {
 		log.Fatalf("open gorm: %v", err)
 	}
 
-	migSQL, err := os.ReadFile("../database/migrations/001_init.sql")
-	if err != nil {
-		log.Fatalf("read migration: %v", err)
-	}
-	if err = sharedDB.Exec(string(migSQL)).Error; err != nil {
-		log.Fatalf("run migration: %v", err)
+	if err = database.Migrate(sharedDB); err != nil {
+		log.Fatalf("run migrations: %v", err)
 	}
 
 	if err = database.SeedIfEmpty(sharedDB, "../database/data/seed.json"); err != nil {
 		log.Fatalf("seed: %v", err)
+	}
+
+	userRepo := repository.NewUserRepository(sharedDB)
+	userSvc := service.NewUserService(userRepo)
+	if _, err = userSvc.CreateUser("Técnico", "tecnico@prefeitura.rio", "painel@2024"); err != nil {
+		log.Printf("aviso: seed de usuário de teste: %v", err)
 	}
 
 	os.Exit(m.Run())
@@ -95,7 +97,8 @@ func TestMain(m *testing.M) {
 func newIntegrationRouter(t *testing.T) *gin.Engine {
 	t.Helper()
 
-	authSvc := service.NewAuthService(testJWTSecret)
+	userRepo := repository.NewUserRepository(sharedDB)
+	authSvc := service.NewAuthService(testJWTSecret, userRepo)
 	childRepo := repository.NewChildRepository(sharedDB)
 	childSvc := service.NewChildService(childRepo, &cache.NoopCache{})
 

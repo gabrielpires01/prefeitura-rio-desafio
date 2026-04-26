@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/prefeiturario/painel-social/internal/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -12,20 +14,26 @@ var (
 )
 
 type AuthService struct {
-	secret string
+	secret   string
+	userRepo repository.UserRepositorier
 }
 
-func NewAuthService(secret string) *AuthService {
-	return &AuthService{secret: secret}
+func NewAuthService(secret string, userRepo repository.UserRepositorier) *AuthService {
+	return &AuthService{secret: secret, userRepo: userRepo}
 }
 
 func (s *AuthService) Login(email, password string) (string, error) {
-	if email != "tecnico@prefeitura.rio" || password != "painel@2024" {
+	user, err := s.userRepo.FindByEmail(email)
+	if err != nil {
+		return "", ErrInvalidCredentials
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return "", ErrInvalidCredentials
 	}
 
 	claims := jwt.MapClaims{
-		"preferred_username": email,
+		"preferred_username": user.Email,
+		"sub":                user.ID,
 		"exp":                time.Now().Add(8 * time.Hour).Unix(),
 		"iat":                time.Now().Unix(),
 	}

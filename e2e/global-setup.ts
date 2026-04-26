@@ -10,7 +10,7 @@ export default async function globalSetup() {
   if (process.env.SKIP_DB_RESET !== "true") {
     console.log("[setup] Resetting Docker Compose stack...");
     execSync("docker compose down -v", { cwd: ROOT, stdio: "inherit" });
-    execSync("docker compose up -d", { cwd: ROOT, stdio: "inherit" });
+    execSync("docker compose up -d --build", { cwd: ROOT, stdio: "inherit" });
     console.log("[setup] Stack started, waiting for backend...");
   } else {
     console.log("[setup] Skipping DB reset (SKIP_DB_RESET=true)");

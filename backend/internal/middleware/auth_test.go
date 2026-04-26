@@ -9,10 +9,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/prefeiturario/painel-social/internal/domain"
 	"github.com/prefeiturario/painel-social/internal/middleware"
 	"github.com/prefeiturario/painel-social/internal/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type mockAuthMiddleware struct {
@@ -125,8 +127,31 @@ func TestAuth_ValidToken_StripsBearerPrefix(t *testing.T) {
 
 // --- Real AuthService integration ---
 
+type stubUserRepo struct{ user *domain.User }
+
+func (s *stubUserRepo) FindByEmail(email string) (*domain.User, error) {
+	if s.user != nil && s.user.Email == email {
+		return s.user, nil
+	}
+	return nil, errors.New("not found")
+}
+func (s *stubUserRepo) Create(u *domain.User) error            { return nil }
+func (s *stubUserRepo) List() ([]domain.User, error)           { return nil, nil }
+func (s *stubUserRepo) GetByID(id string) (*domain.User, error) { return nil, errors.New("not found") }
+func (s *stubUserRepo) Update(u *domain.User) error            { return nil }
+func (s *stubUserRepo) Delete(id string) error                 { return nil }
+
+func newRealAuthSvc(secret string) *service.AuthService {
+	hash, _ := bcrypt.GenerateFromPassword([]byte("painel@2024"), bcrypt.MinCost)
+	return service.NewAuthService(secret, &stubUserRepo{user: &domain.User{
+		ID:           "stub-id",
+		Email:        "tecnico@prefeitura.rio",
+		PasswordHash: string(hash),
+	}})
+}
+
 func TestAuth_RealService_ValidTokenFlows(t *testing.T) {
-	authSvc := service.NewAuthService("integration-secret")
+	authSvc := newRealAuthSvc("integration-secret")
 	tokenStr, err := authSvc.Login("tecnico@prefeitura.rio", "painel@2024")
 	require.NoError(t, err)
 
@@ -142,7 +167,7 @@ func TestAuth_RealService_ValidTokenFlows(t *testing.T) {
 }
 
 func TestAuth_RealService_InvalidToken_Rejected(t *testing.T) {
-	authSvc := service.NewAuthService("integration-secret")
+	authSvc := newRealAuthSvc("integration-secret")
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
