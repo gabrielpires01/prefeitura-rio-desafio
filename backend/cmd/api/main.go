@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/prefeiturario/painel-social/internal/cache"
 	"github.com/prefeiturario/painel-social/internal/config"
 	"github.com/prefeiturario/painel-social/internal/database"
 	"github.com/prefeiturario/painel-social/internal/handler"
@@ -31,9 +32,20 @@ func main() {
 		log.Printf("aviso: seed falhou: %v", err)
 	}
 
+	var childCache cache.Cacher = &cache.NoopCache{}
+	if cfg.RedisURL != "" {
+		rc, err := cache.NewRedisCache(cfg.RedisURL)
+		if err != nil {
+			log.Printf("aviso: redis indisponível, cache desativado: %v", err)
+		} else {
+			childCache = rc
+			log.Println("redis conectado")
+		}
+	}
+
 	authSvc := service.NewAuthService(cfg.JWTSecret)
 	childRepo := repository.NewChildRepository(db)
-	childSvc := service.NewChildService(childRepo)
+	childSvc := service.NewChildService(childRepo, childCache)
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	childHandler := handler.NewChildHandler(childSvc)

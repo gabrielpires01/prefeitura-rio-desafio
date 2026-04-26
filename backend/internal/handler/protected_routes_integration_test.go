@@ -27,6 +27,7 @@ import (
 	"github.com/prefeiturario/painel-social/internal/middleware"
 	"github.com/prefeiturario/painel-social/internal/repository"
 	"github.com/prefeiturario/painel-social/internal/service"
+	"github.com/prefeiturario/painel-social/internal/cache"
 )
 
 const testJWTSecret = "integration-test-secret"
@@ -96,7 +97,7 @@ func newIntegrationRouter(t *testing.T) *gin.Engine {
 
 	authSvc := service.NewAuthService(testJWTSecret)
 	childRepo := repository.NewChildRepository(sharedDB)
-	childSvc := service.NewChildService(childRepo)
+	childSvc := service.NewChildService(childRepo, &cache.NoopCache{})
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	childHandler := handler.NewChildHandler(childSvc)

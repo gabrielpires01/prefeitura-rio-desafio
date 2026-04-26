@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	DatabaseURL    string
+	RedisURL       string
 	JWTSecret      string
 	Port           string
 	SeedFile       string
@@ -25,6 +26,7 @@ func Load() *Config {
 
 	return &Config{
 		DatabaseURL:    os.Getenv("DATABASE_URL"),
+		RedisURL:       os.Getenv("REDIS_URL"),
 		JWTSecret:      getEnv("JWT_SECRET", "dev-secret-key"),
 		Port:           port,
 		SeedFile:       getEnv("SEED_FILE", "data/seed.json"),
